@@ -8,12 +8,14 @@ public:
 		bLog_ = bLog;
 		bProfile_ = bProfile;
 		myThreadId_ = 0;
+		bThreadSpecificJob_ = false;
 	};
 	JobOptions() {
 		//default constructor
 		bLog_ = false;
 		bProfile_ = false;
 		myThreadId_ = 0;
+		bThreadSpecificJob_ = false;
 	};
 	~JobOptions() {};
 
@@ -21,6 +23,7 @@ public:
 	bool bProfile_;
 
 	int myThreadId_;
+	bool bThreadSpecificJob_;
 };
 
 #endif

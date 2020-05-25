@@ -14,20 +14,8 @@ int main()
 
   std::vector<Job> vThreadSpecificJobs;
   std::vector<Job> vDistributableJobs;
-  Job job = Job(&BusyWorkManager::busyWork, pBusyWorkManager);
-    //(&BusyWorkManager::busyWork, this);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
-  vDistributableJobs.push_back(job);
+ Job job = Job(&BusyWorkManager::busyWork, pBusyWorkManager);
+
 
 
   //vThreadSpecificJobs.push_back(job);
@@ -37,6 +25,8 @@ int main()
   pJobQueueManager->startThreads(vThreadSpecificJobs, vDistributableJobs);
   
   
+
+
   delete pJobQueueManager;
   delete pBusyWorkManager;
   return 0;

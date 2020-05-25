@@ -23,7 +23,7 @@ void BusyWorkManager::busyWork(JobOptions options) {
 
 void BusyWorkManager::killThreadDelay(JobOptions options) {
   using namespace std::chrono_literals;
-  std::this_thread::sleep_for(30s);
+  //std::this_thread::sleep_for(30s);
 
   pJobQueueManager_->killThreads();
 }

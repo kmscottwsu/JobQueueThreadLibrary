@@ -35,12 +35,9 @@ public:
 private:
 
 	//thread functions
-	void waitForThreads();
-
-	void createWorkerThread(int i);
-	void workerThread(bool bHighPriority = false);
+	void workerThread();
 	void killThread(JobOptions options);
-	void initializeThread(int& i, JobOptions& options);
+	void initializeThread(JobOptions& options);
 	void doWork(Job& job, JobOptions& options);
 
 	//member variables

@@ -47,32 +47,17 @@ void JobQueueManager::startThreads(std::vector<Job> vThreadSpecificJobs, std::ve
 
   //initialize threads based on jobqueue status
   for (int i = 0; i < iThreads_-1; ++i) {
-    createWorkerThread(i);
+    pvThreadPool_->emplace_back(&JobQueueManager::workerThread, this);
   }
   workerThread();//last thread is main thread
 }
 
-
-void JobQueueManager::createWorkerThread(int i)
+JobQueueManager::~JobQueueManager()
 {
-  bool bHighPriority = false;
-  if (jobQueue_.hasThreadSpecificJob(i)) {
-    bHighPriority = true;
-  }
-  pvThreadPool_->emplace_back(&JobQueueManager::workerThread, this, bHighPriority);
-}
-
-void JobQueueManager::waitForThreads()
-{
-  for (int i = 0; i < iThreads_-1; ++i) {//main thread doesn't join
+  for (int i = 0; i < iThreads_ - 1; ++i) {//main thread doesn't join
     (*pvThreadPool_)[i].join();
     std::cout << "Thread " << i << " joined!" << std::endl;
   }
-}
-
-JobQueueManager::~JobQueueManager()
-{
-  waitForThreads();
   std::chrono::duration<double> diff = std::chrono::high_resolution_clock::now() - time_;
   std::cout << "Total Time: " << diff.count() << "s" << std::endl;
   delete pvThreadPool_;
@@ -84,28 +69,28 @@ JobQueueManager::~JobQueueManager()
   std::cout << jobProfiler;
 }
 
-void JobQueueManager::initializeThread(int& i, JobOptions& options)
+void JobQueueManager::initializeThread(JobOptions& options)
 {
   std::unique_lock<std::mutex> lock(mutWorkers_);
-  i = workers_;
+  options.myThreadId_ = workers_;
   ++workers_;
 
-  options.myThreadId_ = i;
   options.bProfile_ = true;
 
-
+  if (jobQueue_.hasThreadSpecificJob(options.myThreadId_)) {
+    options.bThreadSpecificJob_ = true;
+  }
 }
 
 
-void JobQueueManager::workerThread(bool bNeverWait)
+void JobQueueManager::workerThread()
 {
-  int myThreadId;
   JobOptions myJobOptions;
-  initializeThread(myThreadId, myJobOptions);
+  initializeThread(myJobOptions);
 
   while ( true ) {
-    mutaWaitForJob_.wait(bNeverWait);
-    Job job = jobQueue_.getJob(myThreadId);
+    mutaWaitForJob_.wait(myJobOptions.bThreadSpecificJob_);
+    Job job = jobQueue_.getJob(myJobOptions.myThreadId_);
     try { doWork(job, myJobOptions); }
     catch (KillThreadException exception) { return; }//only killThread job should throw this exception
   }
