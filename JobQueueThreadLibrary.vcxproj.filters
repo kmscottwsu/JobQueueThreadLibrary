@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="JobManagement">
+      <UniqueIdentifier>{7a05c3a4-90d0-4f2b-aad8-fe821bbe8ba6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="helper">
+      <UniqueIdentifier>{eb0d1e72-0442-4985-91c8-e7d591f7132c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="SDL_RenderThread">
+      <UniqueIdentifier>{1780e136-edcd-43e1-9dc5-562272b72bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ManagerBaseClass">
+      <UniqueIdentifier>{1ad89f45-f4d5-4ade-a24e-15f303b92072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BusyWorkManager">
+      <UniqueIdentifier>{e9faf23f-79fe-4e53-bc27-00ce4fdde9aa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueueManager.cpp">
+      <Filter>JobManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>SDL_RenderThread</Filter>
+    </ClCompile>
+    <ClCompile Include="Mutaphore.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>JobManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="BusyWorkManager.cpp">
+      <Filter>BusyWorkManager</Filter>
+    </ClCompile>
+    <ClCompile Include="JobProfiler.cpp">
+      <Filter>JobManagement</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="JobQueueManager.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="JobOptions.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Job.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>SDL_RenderThread</Filter>
+    </ClInclude>
+    <ClInclude Include="KillThreadException.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutaphore.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="ManagerBaseClass.h">
+      <Filter>ManagerBaseClass</Filter>
+    </ClInclude>
+    <ClInclude Include="BusyWorkManager.h">
+      <Filter>BusyWorkManager</Filter>
+    </ClInclude>
+    <ClInclude Include="JobProfiler.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="StdLibraryDependencies.h">
+      <Filter>JobManagement</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SDL2.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>
