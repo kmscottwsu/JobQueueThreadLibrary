@@ -8,14 +8,14 @@ JobQueueManager::JobQueueManager() :
   jobQueue_(iThreads_)//number of threads has to be handed in before construction
 {
   time_ = std::chrono::high_resolution_clock::now();
-
-
-
   workers_ = 0;
 
   if (iThreads_ == 0) {
     iThreads_ = 1;//minimum threads if check fails for whatever reason
   }
+
+  pKillThread.reset(new Job(&JobQueueManager::killThread, this, "KillThread"));
+
 
   //initialize threadpool
   pvThreadPool_ = new std::vector<std::thread>;//has to be dynamically allocated due to not knowing thread count at run time
@@ -31,7 +31,7 @@ void JobQueueManager::startThreads(std::vector<Job> vThreadSpecificJobs, std::ve
 {
   ///assign thread specific jobs
   for (int index = 0; index < vThreadSpecificJobs.size(); ++index) {
-    jobQueue_.setThreadSpecificJob(vThreadSpecificJobs[index], index);
+    jobQueue_.setThreadSpecificJob(&vThreadSpecificJobs[index], index);
   }
 
   //assign distributable jobs to threads that aren't associated with specific ones
@@ -92,7 +92,9 @@ void JobQueueManager::workerThread()
     mutaWaitForJob_.wait(myJobOptions.bThreadSpecificJob_);
     Job job = jobQueue_.getJob(myJobOptions.myThreadId_);
     try { doWork(job, myJobOptions); }
-    catch (KillThreadException exception) { return; }//only killThread job should throw this exception
+    catch (KillThreadException exception) {
+      std::cout << "Thread Id: " << myJobOptions.myThreadId_ << "\t JobCount: " << myJobOptions.jobCount_ << std::endl;
+      return; }//only killThread job should throw this exception
   }
 }
 
@@ -103,6 +105,7 @@ void JobQueueManager::doWork(Job& job, JobOptions& options)
     timeStart = std::chrono::high_resolution_clock::now();
   }
   job.doWork(options);
+  options.jobCount_++;
   if (options.bProfile_) {
     std::chrono::duration<double> diff = std::chrono::high_resolution_clock::now() - timeStart;
     vJobProfiler_[options.myThreadId_].addTime(job.getName(), diff.count());
@@ -115,9 +118,8 @@ void JobQueueManager::doWork(Job& job, JobOptions& options)
 void JobQueueManager::killThreads()
 {
   std::cout << "starting killThreads" << std::endl;
-  std::function<void(JobOptions)> func = std::bind(&JobQueueManager::killThread, this, std::placeholders::_1);
   for (int i = 0; i < jobQueue_.size(); ++i) {
-    jobQueue_.setThreadSpecificJob(func, i);
+    jobQueue_.setThreadSpecificJob(pKillThread.get(), i);
     mutaWaitForJob_.notify_one();
     std::cout << "adding kill thread job to thread index: " << i << std::endl;
   }

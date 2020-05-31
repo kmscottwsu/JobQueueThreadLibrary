@@ -8,6 +8,7 @@ public:
 		bLog_ = bLog;
 		bProfile_ = bProfile;
 		myThreadId_ = 0;
+		jobCount_ = 0;
 		bThreadSpecificJob_ = false;
 	};
 	JobOptions() {
@@ -15,6 +16,7 @@ public:
 		bLog_ = false;
 		bProfile_ = false;
 		myThreadId_ = 0;
+		jobCount_ = 0;
 		bThreadSpecificJob_ = false;
 	};
 	~JobOptions() {};
@@ -23,6 +25,7 @@ public:
 	bool bProfile_;
 
 	int myThreadId_;
+	double jobCount_;
 	bool bThreadSpecificJob_;
 };
 

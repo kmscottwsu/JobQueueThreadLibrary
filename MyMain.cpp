@@ -1,24 +1,31 @@
 #include <vector>
 
+
 #include "Job.h"
 #include "JobQueueManager.h"
 #include "BusyWorkManager.h"
 //#include "Renderer.h"
 
+//#include "SDL.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-
   JobQueueManager* pJobQueueManager = new JobQueueManager();
   BusyWorkManager* pBusyWorkManager = new BusyWorkManager(pJobQueueManager);
+  //Renderer* pRenderer = new Renderer(pJobQueueManager);
+  Job job;
 
   std::vector<Job> vThreadSpecificJobs;
   std::vector<Job> vDistributableJobs;
- Job job = Job(&BusyWorkManager::busyWork, pBusyWorkManager);
+  job = Job(&BusyWorkManager::busyWork, pBusyWorkManager);
+  vDistributableJobs.push_back(job);
+  vDistributableJobs.push_back(job);
+  vDistributableJobs.push_back(job);
+  vDistributableJobs.push_back(job);
 
-
-
+  //job = Job(&Renderer::run, pRenderer);
   //vThreadSpecificJobs.push_back(job);
+
   job = Job(&BusyWorkManager::killThreadDelay, pBusyWorkManager, "killThreadDelay");
   vThreadSpecificJobs.push_back(job);
 

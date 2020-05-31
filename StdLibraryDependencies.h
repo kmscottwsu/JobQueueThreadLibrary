@@ -13,6 +13,7 @@
 #include <string>
 #include <condition_variable>
 #include <map>
+#include <atomic>
 
 
 #endif

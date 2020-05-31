@@ -1,8 +1,14 @@
 #include "JobQueue.h"
 
+
+
+
 SubQueue::SubQueue(int i)
 {
   iThreadId_ = i;
+  pThreadSpecificJob_.store(NULL);
+  iJobCount_.store(0);
+  bQueueInUse_.clear();
 }
 
 SubQueue::~SubQueue()
@@ -10,21 +16,14 @@ SubQueue::~SubQueue()
 
 }
 
-void SubQueue::setThreadSpecificJob(std::function<void(JobOptions)> func, std::string name)
+void SubQueue::setThreadSpecificJob(Job* pJob)
 {
-  std::unique_lock<std::mutex> lock(mut_);
-  jobThreadSpecific_ = Job(func);
-}
-
-void SubQueue::setThreadSpecificJob(Job& job)
-{
-  std::unique_lock<std::mutex> lock(mut_);
-  jobThreadSpecific_ = job;
+  pThreadSpecificJob_.store( pJob);
 }
 
 bool SubQueue::hasThreadSpecificJob()
 {
-  if (jobThreadSpecific_.isValid()) {
+  if (pThreadSpecificJob_.load() != NULL) {
     return true;
   }
   else {
@@ -32,33 +31,44 @@ bool SubQueue::hasThreadSpecificJob()
   }
 }
 
-
 void SubQueue::addJob(std::function<void(JobOptions)> func, std::string name)
 {
-  std::unique_lock<std::mutex> lock(mut_);
-  queue_.emplace(func, name);
+  while (bQueueInUse_.test_and_set()) {}
+  jobQueue_.emplace(func, name);
+  iJobCount_++;
+  bQueueInUse_.clear();
 }
 
 void SubQueue::addJob(Job& job)
 {
-  std::unique_lock<std::mutex> lock(mut_);
-  queue_.push(job);
+  while (bQueueInUse_.test_and_set()) {};//wait for any threads using queue to leave, technically a lock
+  jobQueue_.push(job);
+  iJobCount_++;
+  bQueueInUse_.clear();
 }
+
+
 
 bool SubQueue::findJob(Job& job, int& index)
 {
-  std::unique_lock<std::mutex> lock(mut_);
-  if (( index == iThreadId_ ) && ( jobThreadSpecific_.isValid() )) {
-    job = jobThreadSpecific_;
-    return true;
+  if ( index == iThreadId_ ) {
+    Job* pJob = pThreadSpecificJob_.load();//thread specific jobs are lockless
+    if (pJob != NULL) {
+      job = *pJob;//doesn't really matter if job has changed since load
+      return true;
+    }
   }
-  else if (queue_.empty()) {
+  if (iJobCount_.load() <= 0) {
+    return false;//queue empty
+  }
+  else if(bQueueInUse_.test_and_set()) {//if true, already in use
     return false;
-  } 
-  else {
-    while (!queue_.front().isValid()) { queue_.pop(); }//remove invalid jobs
-    job = queue_.front();
-    queue_.pop();
+  }
+  else {//was able to use the queue
+    iJobCount_--;
+    job = jobQueue_.front();
+    jobQueue_.pop();
+    bQueueInUse_.clear();
     return true;
   }
 }
@@ -119,14 +129,9 @@ void JobQueue::addJob(Job& job, int& index)
   vSubQueues_[index]->addJob(job);
 }
 
-void JobQueue::setThreadSpecificJob(std::function<void(JobOptions)> func, int& index)
+void JobQueue::setThreadSpecificJob(Job* pJob, int& index)
 {
-  vSubQueues_[index]->setThreadSpecificJob(func);
-}
-
-void JobQueue::setThreadSpecificJob(Job& job, int& index)
-{
-  vSubQueues_[index]->setThreadSpecificJob(job);
+  vSubQueues_[index]->setThreadSpecificJob(pJob);
 }
 
 Job JobQueue::getJob(int& index)

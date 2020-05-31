@@ -90,8 +90,9 @@
       <AdditionalIncludeDirectories>C:\GL\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>NotSet</SubSystem>
+      <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>C:\GL\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,7 +129,7 @@
     <ClCompile Include="BusyWorkManager.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="JobQueueManager.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MyMain.cpp" />
     <ClCompile Include="Mutaphore.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="JobProfiler.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="JobQueueManager.h" />
     <ClInclude Include="KillThreadException.h" />
+    <ClInclude Include="LinkedList.h" />
     <ClInclude Include="ManagerBaseClass.h" />
     <ClInclude Include="Mutaphore.h" />
     <ClInclude Include="Renderer.h" />
